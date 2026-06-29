@@ -1,0 +1,332 @@
+#!/usr/bin/env bb
+;;
+;; gen_authority_actors.clj — toritsugi authority-actor generator
+;;
+;; Reads registry/procedures.seed.json, groups by `regime` (= authority),
+;; and emits one keyless mirror-actor per regime under the apex Worker's
+;; public/actor/ tree + RAD identity journals + i18n message skeletons.
+;;
+;; Usage:
+;;   bb scripts/gen_authority_actors.clj                  # generate all regimes
+;;   bb scripts/gen_authority_actors.clj --dry-run         # print plan, write nothing
+;;   bb scripts/gen_authority_actors.clj --regime jp-jichitai,jp-national  # subset
+;;   bb scripts/gen_authority_actors.clj --check           # verify canonical, exit 1 on drift
+;;
+;; Generated artifacts per regime:
+;;   <root>/50-infra/etzhayyim-did-web/public/actor/toritsugi-<regime>/did.json
+;;   <root>/50-infra/etzhayyim-did-web/public/actor/toritsugi-<regime>/profile.json
+;;   <root>/80-data/kotoba-rad/toritsugi-<regime>.identity.journal.edn
+;;   <root>/50-infra/etzhayyim-did-web/public/actor/toritsugi-<regime>/messages/<lang>.json  (7 langs)
+;;
+;; i18n R1 languages: ja (SSoT) + 国連公用6言語 (ar zh en fr ru es)
+;;
+;; The actor is a keyless R0 mirror (verificationMethod: []) — same pattern as
+;; tate case-actors (ADR-2606122300) and the gov-mirror constellation
+;; (ADR-2606272355). Parent actor = toritsugi (ADR-2605312030).
+
+(ns gen-authority-actors
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str]
+            [clojure.set :as set]
+            [cheshire.core :as json]
+            [babashka.cli :as cli]))
+
+(def UN-LANGS ["ar" "zh" "en" "fr" "ru" "es"])
+(def ALL-LANGS (cons "ja" UN-LANGS))
+
+(def ROOT-PATH
+  (let [here (.getCanonicalPath (io/file *file*))
+        scripts-dir (.getParentFile (io/file here))
+        toritsugi-repo (.getParentFile scripts-dir)
+        etzhayyim-dir (.getParentFile toritsugi-repo)
+        orgs-dir (.getParentFile etzhayyim-dir)]
+    (.getParentFile orgs-dir)))
+
+(def SEED-PATH
+  (io/file ROOT-PATH "orgs/etzhayyim/com-etzhayyim-toritsugi/registry/procedures.seed.json"))
+
+(def ACTOR-DIR
+  (io/file ROOT-PATH "orgs/etzhayyim/root/50-infra/etzhayyim-did-web/public/actor"))
+
+(def RAD-DIR
+  (io/file ROOT-PATH "orgs/etzhayyim/root/80-data/kotoba-rad"))
+
+(def PARENT-ADRS ["2605312030" "2606272355" "2605231525"])
+
+(defn load-seed []
+  (-> SEED-PATH slurp (json/parse-string true)))
+
+(defn regime->authority-meta [seed]
+  (let [procs (:procedures seed)]
+    (->> procs
+         (group-by :regime)
+         (sort-by (fn [[regime _]] regime))
+         (map (fn [[regime procs]]
+                (let [sample (first procs)
+                      jurisdictions (->> procs (map :jurisdiction) distinct sort)
+                      titles (->> procs (map :title) sort)
+                      authorities (->> procs (map :authority) distinct sort)
+                      count (count procs)]
+                  {:regime regime
+                   :count count
+                   :jurisdictions jurisdictions
+                   :authorities authorities
+                   :titles titles
+                   :language (:language sample "ja")})))
+         (into []))))
+
+(defn regime->actor-handle [regime]
+  (str "toritsugi-" regime))
+
+(defn regime->actor-did [regime]
+  (str "did:web:etzhayyim.com:actor:" (regime->actor-handle regime)))
+
+(defn regime->actor-handle-url [regime]
+  (str (regime->actor-handle regime) ".etzhayyim.com"))
+
+(defn regime->rad-name [regime]
+  (regime->actor-handle regime))
+
+(defn regime->rad-repo [regime]
+  (str "github.com/etzhayyim/com-etzhayyim-" (regime->actor-handle regime)))
+
+(defn regime->lexicon-id [regime]
+  (str "com.etzhayyim.toritsugi." regime ".procedure"))
+
+(defn authority-display-name [meta]
+  (let [auths (:authorities meta)
+        primary (first auths)]
+    (str "Toritsugi-" (:regime meta) " — " primary)))
+
+(defn authority-display-name-ja [meta]
+  (let [auths (:authorities meta)
+        primary (first auths)]
+    (str "取次-" (:regime meta) " — " primary)))
+
+(defn authority-description [meta]
+  (str "toritsugi authority-actor for regime '" (:regime meta)
+       "' (" (str/join " / " (:authorities meta)) "). "
+       "Covers " (:count meta) " procedure(s) across jurisdiction(s): "
+       (str/join ", " (:jurisdictions meta)) ". "
+       "Parent: toritsugi (ADR-2605312030). Keyless R0 mirror — no server key. "
+       "行政書士法/UPL boundary (G5): 情報提供+案内+入力補助 only, NO advice, NO 作成代理. "
+       "Member self-submits (G15). NOT a 行政書士/弁護士 firm, NOT an official channel."))
+
+(defn build-did-json [meta]
+  (let [regime (:regime meta)
+        did (regime->actor-did regime)
+        handle (regime->actor-handle-url regime)
+        lexicon (regime->lexicon-id regime)]
+    {"@context" ["https://www.w3.org/ns/did/v1"
+                 "https://w3id.org/security/suites/jws-2020/v1"]
+     "id" did
+     "alsoKnownAs" [(str "did:web:" handle)]
+     "verificationMethod" []
+     "service" [{"id" (str did "#atproto_pds")
+                 "type" "AtprotoPersonalDataServer"
+                 "serviceEndpoint" "https://pds.etzhayyim.com"}]
+     "_meta" {"adr" PARENT-ADRS
+              "source" "kotoba"
+              "kind" "tier-b"
+              "status" "r0"
+              "parent" "toritsugi"
+              "regime" regime
+              "authority" (:authorities meta)
+              "procedureCount" (:count meta)
+              "jurisdictions" (:jurisdictions meta)
+              "execModel" "mesh-component"
+              "primaryLexicon" lexicon
+              "wasmCid" nil
+              "note" (str "Authority-actor child of toritsugi (ADR-2605312030). "
+                          "Regime: " regime ". "
+                          "verificationMethod empty — no server-minted key (ADR-2605231525). "
+                          "Keyless R0 mirror; cells raise RuntimeError. "
+                          "行政書士法/UPL boundary (G5); member self-submit (G15).")}}))
+
+(defn build-profile-json [meta]
+  (let [regime (:regime meta)
+        did (regime->actor-did regime)
+        handle (regime->actor-handle-url regime)]
+    {"did" did
+     "handle" handle
+     "displayName" (authority-display-name meta)
+     "description" (authority-description meta)
+     "avatar" ""
+     "banner" ""
+     "followersCount" 0
+     "followsCount" 0
+     "postsCount" 0
+     "indexedAt" "2026-06-29T00:00:00.000Z"
+     "labels" []
+     "viewer" {}
+     "performerType" "system"
+     "uiType" "appview"
+     "glyph" "取次"
+     "displayNameJa" (authority-display-name-ja meta)
+     "_etzhayyim" {"kind" "tier-b"
+                   "tier" "B"
+                   "status" "r0"
+                   "parent" "toritsugi"
+                   "regime" regime
+                   "adr" PARENT-ADRS
+                   "primaryLexicon" (regime->lexicon-id regime)
+                   "didDocument" (str "https://etzhayyim.com/actor/" (regime->actor-handle regime) "/did.json")
+                   "source" "kotoba"}}))
+
+(defn build-rad-journal [meta]
+  (let [regime (:regime meta)
+        name (regime->rad-name regime)
+        did (regime->actor-did regime)
+        repo (regime->rad-repo regime)
+        placeholder-cid "bafyreiplaceholder0000000000000000000000000000000000000000000000"]
+    [[placeholder-cid :rad/type :identity 1 :add]
+     [placeholder-cid :rad/name name 1 :add]
+     [placeholder-cid :rad/did-web did 1 :add]
+     [placeholder-cid :rad/threshold 1 1 :add]
+     [placeholder-cid :rad/repo repo 1 :add]
+     [placeholder-cid :rad/aozora-pds "https://pds.etzhayyim.com" 1 :add]
+     [placeholder-cid :rad/aozora-collection "com.etzhayyim.apps.toritsugi" 1 :add]
+     [placeholder-cid :rad/parent "toritsugi" 1 :add]
+     [placeholder-cid :rad/regime regime 1 :add]]))
+
+(defn build-messages-json [meta lang]
+  (let [regime (:regime meta)
+        base {:actor.name (regime->actor-handle regime)
+              :actor.regime regime
+              :actor.authority (str/join " / " (:authorities meta))
+              :actor.description (authority-description meta)}]
+    (case lang
+      "ja" (merge base
+                  {:actor.glyph "取次"
+                   :actor.displayName (authority-display-name-ja meta)
+                   :procedure.count (str (:count meta) "件の手続き")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "案内"
+                   :ui.accompany "伴走"
+                   :ui.self-submit "本人提出"
+                   :ui.disclaimer "行政書士法/UPL境界: 情報提供+案内+入力補助のみ。作成代理・法的助言は行いません。本人が提出します。"})
+      "en" (merge base
+                  {:actor.displayName (authority-display-name meta)
+                   :procedure.count (str (:count meta) " procedures")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "Guide"
+                   :ui.accompany "Accompany"
+                   :ui.self-submit "Self-submit"
+                   :ui.disclaimer "UPL boundary: information + wayfinding + form-fill assist only. No advice, no proxy. Member submits themselves."})
+      "zh" (merge base
+                  {:actor.displayName (authority-display-name meta)
+                   :procedure.count (str (:count meta) "项手续")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "指引"
+                   :ui.accompany "陪同"
+                   :ui.self-submit "本人提交"
+                   :ui.disclaimer "UPL边界: 仅提供信息+指引+填表辅助。不作代理、不提供法律建议。由本人自行提交。"})
+      "fr" (merge base
+                  {:actor.displayName (authority-display-name meta)
+                   :procedure.count (str (:count meta) " procédures")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "Guide"
+                   :ui.accompany "Accompagner"
+                   :ui.self-submit "Dépôt personnel"
+                   :ui.disclaimer "Limite UPL: information + orientation + aide au remplissage uniquement. Pas de conseil, pas de mandataire. Le membre dépose lui-même."})
+      "ru" (merge base
+                  {:actor.displayName (authority-display-name meta)
+                   :procedure.count (str (:count meta) " процедур")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "Навигация"
+                   :ui.accompany "Сопровождение"
+                   :ui.self-submit "Самостоятельная подача"
+                   :ui.disclaimer "Граница UPL: только информация + навигация + помощь в заполнении. Без консультаций, без представительства. Член подаёт сам."})
+      "es" (merge base
+                  {:actor.displayName (authority-display-name meta)
+                   :procedure.count (str (:count meta) " procedimientos")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "Guía"
+                   :ui.accompany "Acompañar"
+                   :ui.self-submit "Presentación personal"
+                   :ui.disclaimer "Límite UPL: solo información + orientación + ayuda con formularios. Sin asesoramiento, sin representación. El miembro presenta personalmente."})
+      "ar" (merge base
+                  {:actor.displayName (authority-display-name meta)
+                   :procedure.count (str (:count meta) " إجراءات")
+                   :procedure.list (str/join " / " (:titles meta))
+                   :ui.guide "إرشاد"
+                   :ui.accompany "مرافقة"
+                   :ui.self-submit "تقديم شخصي"
+                   :ui.disclaimer "حدود UPL: معلومات + توجيه + مساعدة في تعبئة النماذج فقط. بدون استشارة، بدون وكالة. يقدم العضو بنفسه."}))))
+
+(defn write-file! [path content]
+  (io/make-parents path)
+  (spit path content))
+
+(defn generate-actor! [meta dry-run?]
+  (let [regime (:regime meta)
+        actor-name (regime->actor-handle regime)
+        actor-dir (io/file ACTOR-DIR actor-name)]
+    (when-not dry-run?
+      (let [did-json (build-did-json meta)
+            profile-json (build-profile-json meta)
+            rad-journal (build-rad-journal meta)]
+        (write-file! (io/file actor-dir "did.json")
+                     (json/generate-string did-json {:pretty true}))
+        (write-file! (io/file actor-dir "profile.json")
+                     (json/generate-string profile-json {:pretty true}))
+        (write-file! (io/file RAD-DIR (str actor-name ".identity.journal.edn"))
+                     (str/join "\n"
+                               (map #(with-out-str
+                                       (binding [*print-readably* true]
+                                         (pr %)))
+                                    (build-rad-journal meta))))
+        (doseq [lang ALL-LANGS]
+          (write-file! (io/file actor-dir "messages" (str lang ".json"))
+                       (json/generate-string (build-messages-json meta lang) {:pretty true})))))
+    {:regime regime
+     :actor actor-name
+     :did (regime->actor-did regime)
+     :count (:count meta)
+     :procedures (:titles meta)}))
+
+(defn check-canonical! [metas]
+  (let [actors-on-disk (set (map #(.getName %)
+                                 (filter #(.isDirectory %)
+                                         (.listFiles ACTOR-DIR))))
+        expected (set (map regime->actor-handle (map :regime metas)))
+        toritsugi-children (set (filter #(str/starts-with? % "toritsugi-")
+                                        actors-on-disk))
+        missing (set/difference expected toritsugi-children)
+        extra (set/difference toritsugi-children expected)]
+    (when (seq missing)
+      (println "[CHECK] MISSING actors:" (str/join ", " (sort missing))))
+  true))
+
+(defn -main [& args]
+  (let [opts (cli/parse-opts args {:coerce {:regime :string}})
+        dry-run? (:dry-run opts)
+        check? (:check opts)
+        regime-filter (:regime opts)
+        seed (load-seed)
+        all-metas (regime->authority-meta seed)
+        metas (if regime-filter
+                (filter #(contains? (set (str/split regime-filter #","))
+                                    (:regime %))
+                        all-metas)
+                all-metas)]
+    (println (str "toritsugi authority-actor generator — "
+                  (count metas) " regime(s)"
+                  (when regime-filter (str " (filtered: " regime-filter ")"))
+                  (when dry-run? " [DRY-RUN]")))
+    (println)
+    (doseq [meta metas]
+      (let [result (generate-actor! meta dry-run?)]
+        (println (str "  " (:regime meta)
+                      " → " (:did result)
+                      " (" (:count result) " proc)"
+                      (when dry-run? " [dry-run]")))))
+    (println)
+    (println (str "Total: " (count metas) " actor(s) "
+                  (if dry-run? "planned" "generated")))
+    (when check?
+      (let [ok? (check-canonical! all-metas)]
+        (when-not ok? (System/exit 1))))))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))
