@@ -1,0 +1,9 @@
+{:paths ["src" "test"]
+ :tasks
+ {test {:doc "Run toritsugi cljc actor boundary tests."
+        :task (do
+                (require 'clojure.test
+                         'toritsugi.murakumo-test)
+                (let [run-tests (requiring-resolve 'clojure.test/run-tests)
+                      r (run-tests 'toritsugi.murakumo-test)]
+                  (System/exit (if (zero? (+ (:fail r) (:error r))) 0 1))))}}}
