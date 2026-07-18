@@ -1,0 +1,32 @@
+{
+  "lexicon": 1,
+  "id": "com.etzhayyim.toritsugi.applicationDraft",
+  "description": "An assisted form draft artifact for a procedure (ADR-2605312030 §3, `toritsugi_draft`). toritsugi ASSISTS the member in filling the 様式/フォーム; the member reviews + owns + (default) submits it themselves. CONSTITUTIONAL: this is input-assistance, NOT 官公署提出書類の作成代理 reserved to 行政書士/弁護士/税理士 (G5); the member always confirms before any submission (G8); the draft's PII content lives ONLY in an com.etzhayyim.encrypted.* DID-bound envelope (G6) — this record holds the POINTER + metadata, never inline PII.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "memberDid",
+          "procedureRef",
+          "guideRef",
+          "encryptedDraftRef",
+          "memberConfirmed",
+          "createdAt"
+        ],
+        "properties": {
+          "memberDid": {"type": "string", "format": "did", "description": "The member who owns the draft (申請者本人, G3/G4)"},
+          "procedureRef": {"type": "string", "description": "AT-URI / rkey of the toritsugi.procedure"},
+          "guideRef": {"type": "string", "description": "AT-URI / rkey of the parent procedureGuide session"},
+          "encryptedDraftRef": {"type": "string", "description": "Pointer to the com.etzhayyim.encrypted.* envelope holding the filled draft (G6); never inline PII"},
+          "assistMode": {"type": "string", "knownValues": ["input-assist"], "description": "Always input-assist — never 作成代理 (G5). A schema-level invariant: no other value is representable."},
+          "memberConfirmed": {"type": "boolean", "description": "G8 — the member has reviewed + confirmed the draft content before it may be submitted"},
+          "createdAt": {"type": "string", "format": "datetime"},
+          "stateAlignedFlag": {"type": "boolean", "description": "G13 pass-through"}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{:dependencies
+ [{:dependency/id etzhayyim/root
+   :dependency/repository "https://github.com/etzhayyim/root"
+   :dependency/revision "ae6832f7ed09147a18b0416de18b44b00c95562a"
+   :dependency/paths ["90-docs/adr"]}
+  {:dependency/id com.etzhayyim/chigiri
+   :dependency/revision "e08560129675106e0bb4b70e23769ff07a711ce7"
+   :dependency/west-path "orgs/etzhayyim/com-etzhayyim-chigiri"}
+  {:dependency/id com.etzhayyim/ooyake
+   :dependency/revision "c35c46aabd258d66f7544c03d1a6a8c0a6ffb91a"
+   :dependency/west-path "orgs/etzhayyim/com-etzhayyim-ooyake"}
+  {:dependency/id org.kotoba-lang/langgraph
+   :dependency/revision "a75fe35038dc9218e26b7da4940989cd13754769"
+   :dependency/west-path "orgs/kotoba-lang/langgraph"}
+  {:dependency/id org.kotoba-lang/langchain
+   :dependency/revision "cda206ea2cbe709e134cb7198f85f0eae1993c96"
+   :dependency/west-path "orgs/kotoba-lang/langchain"}
+  {:dependency/id org.kotoba-lang/org-omg-bpmn
+   :dependency/revision "7d0c115b18366748a2c3f10baff3adc63d094641"
+   :dependency/west-path "orgs/kotoba-lang/org-omg-bpmn"}]}

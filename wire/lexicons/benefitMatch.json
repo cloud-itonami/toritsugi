@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "com.etzhayyim.toritsugi.benefitMatch",
+  "description": "A PROACTIVE eligibility match raised for a CONSENTING member — 'you may be eligible for procedure/benefit X' (the LINE-公式アカウント notify role; ADR-2605312030 §3, `toritsugi_eligibility_match`). CONSTITUTIONAL: derived ONLY from the member's OWN life-event/profile data with consent (G3); never a third party; data-minimised (G12); cites the procedure it points to and its legalBasis (G8 — no fabricated entitlement). This record holds match METADATA + a pointer, never plaintext member PII (member detail lands only in com.etzhayyim.encrypted.* per G6).",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "memberDid",
+          "procedureRef",
+          "rationale",
+          "consentRef",
+          "createdAt"
+        ],
+        "properties": {
+          "memberDid": {"type": "string", "format": "did", "description": "The consenting member's DID (G3 identity binding)"},
+          "procedureRef": {"type": "string", "description": "AT-URI / rkey of the toritsugi.procedure this match points to"},
+          "rationale": {"type": "string", "maxLength": 1000, "description": "Why the member may be eligible (cites the life-event/criterion; no fabricated entitlement, G8). Not a legal determination (G5)."},
+          "confidence": {"type": "string", "knownValues": ["likely", "possible", "informational"], "description": "Soft signal only — NOT an adjudication of eligibility (G5)"},
+          "consentRef": {"type": "string", "description": "Reference to the member's recorded consent to be matched (G3)"},
+          "encryptedDetailRef": {"type": "string", "description": "Pointer to the com.etzhayyim.encrypted.* envelope holding any member PII used (G6); never inline PII"},
+          "createdAt": {"type": "string", "format": "datetime"},
+          "stateAlignedFlag": {"type": "boolean", "description": "G13 pass-through"}
+        }
+      }
+    }
+  }
+}

@@ -35,7 +35,7 @@ holding the **窓口 / 所管 (省庁・自治体) / オンライン申請URL / 
 手数料 / 法定処理期間 / 根拠法令 / channel** so a cell can guide (and eventually
 file) procedurally.
 
-- Seed: [`registry/procedures.seed.json`](registry/procedures.seed.json) — 6
+- Seed: [`registry/procedures.seed.edn`](registry/procedures.seed.edn) — 6
   entries (住民票の写し / 転入届 / 出生届 / マイナンバーカード交付申請 /
   児童手当認定請求 / 確定申告 e-Tax), **all `unverified-seed`**.
 - **Honesty gate (G14):** no live submission against an `unverified-seed` or
@@ -100,5 +100,5 @@ only) → R2 draft + status-track (member self-submits) → R3 gated 本人同�
 ## References
 
 - ADR: [`/90-docs/adr/2605312030-toritsugi-government-procedure-concierge-tier-b-actor-r0.md`](/90-docs/adr/2605312030-toritsugi-government-procedure-concierge-tier-b-actor-r0.md)
-- Lexicons: [`/00-contracts/lexicons/com/etzhayyim/toritsugi/`](/00-contracts/lexicons/com/etzhayyim/toritsugi/)
+- Lexicons: [`lex/`](lex/)
 - Charter Rider: [`/CHARTER-RIDER.md`](/CHARTER-RIDER.md)

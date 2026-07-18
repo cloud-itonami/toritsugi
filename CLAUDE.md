@@ -19,7 +19,7 @@ procedure — the LINE-公式アカウント role:
 
 Driven by a **coded procedure registry** (`procedure`) holding each procedure's
 窓口 / 所管 / オンライン申請URL / 必要書類 / 様式 / 手数料 / 法定処理期間 /
-根拠法令 / channel. Seed at `registry/procedures.seed.json`.
+根拠法令 / channel. Seed at `registry/procedures.seed.edn`.
 
 ```
 procedure_registry ─┐

@@ -1,0 +1,163 @@
+{
+  "lexicon" : 1,
+  "id" : "com.etzhayyim.toritsugi.che-passport.procedure",
+  "description" : "Authority-scoped procedure registry for regime 'che-passport' (fedpol / cantonal passport office — Schweizer Pass). Covers 1 procedure(s) across che. Child of com.etzhayyim.toritsugi.procedure (ADR-2605312030). Same schema + constitutional gates (G5/G8/G14/G15). verificationStatus gates live submission (G14). 行政書士法/UPL boundary: 情報提供+案内+入力補助 only, NO advice, NO 作成代理. Member self-submits (G15).",
+  "defs" : {
+    "main" : {
+      "type" : "record",
+      "key" : "tid",
+      "record" : {
+        "type" : "object",
+        "required" : [ "procedureId", "title", "jurisdiction", "authority", "channelType", "legalBasis", "provenance", "lastVerified", "verificationStatus" ],
+        "properties" : {
+          "feeBrl" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in BRL (G9)"
+          },
+          "confidence" : {
+            "type" : "string",
+            "knownValues" : [ "high", "medium", "low" ],
+            "description" : "Best-effort confidence (informational only)"
+          },
+          "authority" : {
+            "type" : "string",
+            "maxLength" : 300,
+            "description" : "所管 — the ministry / municipality / agency"
+          },
+          "feeMxn" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in MXN (G9)"
+          },
+          "procedureId" : {
+            "type" : "string",
+            "maxLength" : 120,
+            "description" : "Stable slug (e.g. 'jp-juminhyo-utsushi')"
+          },
+          "feeUsd" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in USD (G9)"
+          },
+          "feeCad" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in CAD (G9)"
+          },
+          "feeJpy" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "手数料 in JPY (G9: authority fee, not toritsugi charge)"
+          },
+          "feeInr" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in INR (G9)"
+          },
+          "requiredDocuments" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "maxLength" : 300
+            },
+            "description" : "必要書類 checklist"
+          },
+          "feeEur" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in EUR (G9)"
+          },
+          "lastVerified" : {
+            "type" : "string",
+            "format" : "datetime",
+            "description" : "When the procedure data was last verified"
+          },
+          "formRef" : {
+            "type" : "string",
+            "maxLength" : 120,
+            "description" : "chigiri procedure-template id"
+          },
+          "feeKrw" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in KRW (G9)"
+          },
+          "legalBasis" : {
+            "type" : "string",
+            "maxLength" : 300,
+            "description" : "根拠法令 — MANDATORY (G8)"
+          },
+          "channelType" : {
+            "type" : "string",
+            "knownValues" : [ "online", "in-person", "postal", "in-person-or-online" ],
+            "description" : "HOW the procedure is filed"
+          },
+          "jurisdiction" : {
+            "type" : "string",
+            "maxLength" : 8,
+            "description" : "e.g. che"
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "description" : "Procedure display name"
+          },
+          "provenance" : {
+            "type" : "string",
+            "format" : "uri",
+            "description" : "Source URL — MANDATORY (G8)"
+          },
+          "feeGbp" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in GBP (G9)"
+          },
+          "verificationStatus" : {
+            "type" : "string",
+            "knownValues" : [ "unverified-seed", "maintainer-verified", "council-verified" ],
+            "description" : "G14 submission gate"
+          },
+          "regime" : {
+            "type" : "string",
+            "knownValues" : [ "che-passport" ],
+            "description" : "Authority regime (pinned to 'che-passport' for this lexicon)."
+          },
+          "notes" : {
+            "type" : "string",
+            "maxLength" : 1500
+          },
+          "language" : {
+            "type" : "string",
+            "maxLength" : 16,
+            "description" : "Filing language, e.g. ja / en"
+          },
+          "statutoryProcessingDays" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "法定処理期間 (0 = same-day)"
+          },
+          "feeSgd" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in SGD (G9)"
+          },
+          "onlineUrl" : {
+            "type" : "string",
+            "format" : "uri",
+            "description" : "Online application portal URL if any"
+          },
+          "stateAlignedFlag" : {
+            "type" : "boolean",
+            "description" : "G13 pass-through"
+          },
+          "feeAud" : {
+            "type" : "integer",
+            "minimum" : 0,
+            "description" : "Authority fee in AUD (G9)"
+          }
+        }
+      }
+    }
+  }
+}

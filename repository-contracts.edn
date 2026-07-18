@@ -1,0 +1,15 @@
+{:repository/name "com-etzhayyim-toritsugi"
+ :repository/category :actor
+ :repository/canonical-format :edn
+ :repository/canonical-metadata "manifest.edn"
+ :repository/canonical-identity "identity.edn"
+ :repository/dependencies "dependencies.edn"
+ :repository/source-roots ["src"]
+ :repository/test-roots ["test"]
+ :repository/lexicons "lex"
+ :repository/canonical-data ["kotoba.app.edn" "schema.edn"
+                             "registry/procedures.seed.edn"
+                             "registry/toritsugi.procedure-flow.bpmn.edn"]
+ :repository/external-wire "wire"
+ :repository/legacy-artifacts-forbidden ["manifest.jsonld" "run_tests.sh"
+                                         "registry/procedures.seed.json"]}

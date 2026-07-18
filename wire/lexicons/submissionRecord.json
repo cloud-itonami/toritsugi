@@ -1,0 +1,34 @@
+{
+  "lexicon": 1,
+  "id": "com.etzhayyim.toritsugi.submissionRecord",
+  "description": "A record of a procedure submission (ADR-2605312030 §3, `toritsugi_submit`). Two `mode`s: `member-self-submit` (default, R2 — toritsugi assembled + handed back, the member filed + signed) and `agent-on-behalf` (代行, R3 GATED — toritsugi filed the member's OWN procedure via the official channel). CONSTITUTIONAL: `agent-on-behalf` is permitted ONLY when the procedure is `council-verified` (G14), per-submission consent is recorded, and the R3 gate (行政書士法 clearance + Council Lv7+) is satisfied (G15); the only external mutation is a lawful submission via an official channel with member authorization (G10); member is the named 申請者本人 (G4); no platform-held signing key (ADR-2605231525). Holds submission metadata + pointers, never inline PII (G6).",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "memberDid",
+          "procedureRef",
+          "mode",
+          "channel",
+          "consentRef",
+          "submittedAt"
+        ],
+        "properties": {
+          "memberDid": {"type": "string", "format": "did", "description": "The 申請者本人 (G3/G4)"},
+          "procedureRef": {"type": "string", "description": "AT-URI / rkey of the toritsugi.procedure"},
+          "draftRef": {"type": "string", "description": "AT-URI / rkey of the applicationDraft submitted"},
+          "mode": {"type": "string", "knownValues": ["member-self-submit", "agent-on-behalf"], "description": "G15 — `member-self-submit` is the default; `agent-on-behalf` (代行) is the GATED R3 exception (council-verified procedure + per-submission consent + 行政書士法 clearance + Council Lv7+)"},
+          "channel": {"type": "string", "knownValues": ["online", "in-person", "postal"], "description": "The official channel used (G10 lawful-channel-only)"},
+          "consentRef": {"type": "string", "description": "Per-submission consent artifact (G3; mandatory for agent-on-behalf, G15)"},
+          "councilGateRef": {"type": "string", "description": "For mode=agent-on-behalf: reference to the on-chain Council Lv7+ ratification + 行政書士法 clearance gate (G15). Absent ⇒ agent-on-behalf is invalid."},
+          "receiptRef": {"type": "string", "description": "Pointer to the com.etzhayyim.encrypted.* envelope holding the submission receipt / 受付番号 (G6)"},
+          "submittedAt": {"type": "string", "format": "datetime"},
+          "stateAlignedFlag": {"type": "boolean", "description": "G13 pass-through"}
+        }
+      }
+    }
+  }
+}

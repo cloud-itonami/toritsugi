@@ -1,0 +1,30 @@
+{
+  "lexicon": 1,
+  "id": "com.etzhayyim.toritsugi.statusTrack",
+  "description": "Tracks a submitted procedure's 処理状況 + 法定処理期間 clock + result (ADR-2605312030 §3, `toritsugi_status_track`). On refusal / partial outcome, routes a lawful appeal (不服申立 / 審査請求) via chigiri (G11). CONSTITUTIONAL: assist + track only, no coercion (G11); the result / 結果通知 PII lands ONLY in an com.etzhayyim.encrypted.* DID-bound envelope (G6) — this record holds status metadata + pointers, never inline PII.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "memberDid",
+          "submissionRef",
+          "state",
+          "updatedAt"
+        ],
+        "properties": {
+          "memberDid": {"type": "string", "format": "did", "description": "The 申請者本人 (G3/G4)"},
+          "submissionRef": {"type": "string", "description": "AT-URI / rkey of the submissionRecord being tracked"},
+          "state": {"type": "string", "knownValues": ["submitted", "in-review", "additional-docs-requested", "approved", "partially-approved", "refused", "withdrawn", "appealing"], "description": "Procedure outcome state"},
+          "dueAt": {"type": "string", "format": "datetime", "description": "法定処理期間 deadline derived from the procedure's statutoryProcessingDays"},
+          "resultRef": {"type": "string", "description": "Pointer to the com.etzhayyim.encrypted.* envelope holding the 結果通知 / outcome detail (G6); never inline PII"},
+          "appealRef": {"type": "string", "description": "On refusal/partial: reference to the chigiri-routed lawful appeal (不服申立/審査請求) record (G11)"},
+          "updatedAt": {"type": "string", "format": "datetime"},
+          "stateAlignedFlag": {"type": "boolean", "description": "G13 pass-through"}
+        }
+      }
+    }
+  }
+}

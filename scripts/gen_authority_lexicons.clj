@@ -2,8 +2,8 @@
 ;;
 ;; gen_authority_lexicons.clj — toritsugi authority-actor lexicon generator
 ;;
-;; Reads registry/procedures.seed.json, groups by `regime`, and emits one
-;; lexicon per regime at 00-contracts/lexicons/com/etzhayyim/toritsugi/<regime>/procedure.json
+;; Reads canonical registry/procedures.seed.edn, groups by `regime`, and emits one
+;; canonical EDN lexicon plus a JSON wire projection per regime.
 ;;
 ;; Usage:
 ;;   bb scripts/gen_authority_lexicons.clj                  # generate all
@@ -17,25 +17,28 @@
 (ns gen-authority-lexicons
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
+            [clojure.edn :as edn]
+            [clojure.walk :as walk]
+            [clojure.pprint :as pprint]
             [cheshire.core :as json]
             [babashka.cli :as cli]))
 
-(def ROOT-PATH
+(def REPO-PATH
   (let [here (.getCanonicalPath (io/file *file*))
-        scripts-dir (.getParentFile (io/file here))
-        toritsugi-repo (.getParentFile scripts-dir)
-        etzhayyim-dir (.getParentFile toritsugi-repo)
-        orgs-dir (.getParentFile etzhayyim-dir)]
-    (.getParentFile orgs-dir)))
+        scripts-dir (.getParentFile (io/file here))]
+    (.getParentFile scripts-dir)))
 
 (def SEED-PATH
-  (io/file ROOT-PATH "orgs/etzhayyim/com-etzhayyim-toritsugi/registry/procedures.seed.json"))
+  (io/file REPO-PATH "registry/procedures.seed.edn"))
 
 (def LEXICON-DIR
-  (io/file ROOT-PATH "orgs/etzhayyim/root/00-contracts/lexicons/com/etzhayyim/toritsugi"))
+  (io/file REPO-PATH "lex"))
+
+(def WIRE-DIR
+  (io/file REPO-PATH "wire/lexicons"))
 
 (defn load-seed []
-  (-> SEED-PATH slurp (json/parse-string true)))
+  (-> SEED-PATH slurp edn/read-string walk/keywordize-keys))
 
 (defn regime->procs [seed]
   (->> (:procedures seed)
@@ -141,12 +144,16 @@
     (doseq [[regime procs] regimes]
       (let [lexicon (build-lexicon regime procs)
             out-dir (io/file LEXICON-DIR regime)
-            out-file (io/file out-dir "procedure.json")]
+            out-file (io/file out-dir "procedure.edn")
+            wire-file (io/file WIRE-DIR regime "procedure.json")]
         (if dry-run?
           (println (str "  " regime " → " (.getPath out-file) " [dry-run]"))
           (do
             (io/make-parents out-file)
-            (spit out-file (json/generate-string lexicon {:pretty true}))
+            (io/make-parents wire-file)
+            (with-open [w (io/writer out-file)]
+              (binding [*out* w] (pprint/pprint lexicon)))
+            (spit wire-file (json/generate-string lexicon {:pretty true}))
             (println (str "  " regime " → " (.getPath out-file)
                          " (" (count procs) " proc)"))))))
     (println)

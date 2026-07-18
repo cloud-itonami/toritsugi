@@ -1,0 +1,45 @@
+{
+  "lexicon": 1,
+  "id": "com.etzhayyim.toritsugi.procedureGuide",
+  "description": "A member-facing 案内/伴走 session for a single procedure (ADR-2605312030 §3, `toritsugi_intake` + `toritsugi_guide`). Holds the step-by-step walkthrough state + 必要書類 checklist pulled from a chigiri template (G5 — guidance, never 作成代理 or legal advice). CONSTITUTIONAL: member-initiated + consent + DID/SBT bound, OWN procedure only (G3); the member is the named 申請者本人 (G4); cites the procedure's legalBasis (G8). Holds session metadata + checklist state, not plaintext member PII (G6).",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "memberDid",
+          "procedureRef",
+          "status",
+          "createdAt"
+        ],
+        "properties": {
+          "memberDid": {"type": "string", "format": "did", "description": "The consenting member's DID (G3); the 申請者本人 (G4)"},
+          "procedureRef": {"type": "string", "description": "AT-URI / rkey of the toritsugi.procedure being walked through"},
+          "templateRef": {"type": "string", "maxLength": 120, "description": "chigiri procedure-template id this guide renders (G5 boundary)"},
+          "status": {"type": "string", "knownValues": ["open", "documents-pending", "ready-to-draft", "ready-to-submit", "submitted", "closed", "abandoned"], "description": "Session lifecycle state"},
+          "checklist": {
+            "type": "array",
+            "description": "必要書類 / step checklist state",
+            "items": {"type": "ref", "ref": "#checklistEntry"}
+          },
+          "consentRef": {"type": "string", "description": "Reference to the member's recorded consent (G3)"},
+          "createdAt": {"type": "string", "format": "datetime"},
+          "updatedAt": {"type": "string", "format": "datetime"},
+          "stateAlignedFlag": {"type": "boolean", "description": "G13 pass-through"}
+        }
+      }
+    },
+    "checklistEntry": {
+      "type": "object",
+      "description": "One 必要書類 / step checklist item in a procedureGuide session",
+      "required": ["label", "done"],
+      "properties": {
+        "label": {"type": "string", "maxLength": 300},
+        "done": {"type": "boolean"},
+        "note": {"type": "string", "maxLength": 500}
+      }
+    }
+  }
+}

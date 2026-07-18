@@ -2,7 +2,7 @@
 ;;
 ;; gen_authority_actors.clj — toritsugi authority-actor generator
 ;;
-;; Reads registry/procedures.seed.json, groups by `regime` (= authority),
+;; Reads canonical registry/procedures.seed.edn, groups by `regime` (= authority),
 ;; and emits one keyless mirror-actor per regime under the apex Worker's
 ;; public/actor/ tree + RAD identity journals + i18n message skeletons.
 ;;
@@ -28,6 +28,8 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.set :as set]
+            [clojure.edn :as edn]
+            [clojure.walk :as walk]
             [cheshire.core :as json]
             [babashka.cli :as cli]))
 
@@ -42,8 +44,11 @@
         orgs-dir (.getParentFile etzhayyim-dir)]
     (.getParentFile orgs-dir)))
 
+(def REPO-PATH
+  (-> *file* io/file .getCanonicalFile .getParentFile .getParentFile))
+
 (def SEED-PATH
-  (io/file ROOT-PATH "orgs/etzhayyim/com-etzhayyim-toritsugi/registry/procedures.seed.json"))
+  (io/file REPO-PATH "registry/procedures.seed.edn"))
 
 (def ACTOR-DIR
   (io/file ROOT-PATH "orgs/etzhayyim/root/50-infra/etzhayyim-did-web/public/actor"))
@@ -54,7 +59,7 @@
 (def PARENT-ADRS ["2605312030" "2606272355" "2605231525"])
 
 (defn load-seed []
-  (-> SEED-PATH slurp (json/parse-string true)))
+  (-> SEED-PATH slurp edn/read-string walk/keywordize-keys))
 
 (defn regime->authority-meta [seed]
   (let [procs (:procedures seed)]

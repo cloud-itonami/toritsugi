@@ -1,0 +1,60 @@
+{
+  "lexicon": 1,
+  "id": "com.etzhayyim.toritsugi.procedure",
+  "description": "Coded government / municipal PROCEDURE registry entry — one record per procedure × jurisdiction × authority, holding the procedure's 窓口 / 所管 (省庁・自治体) / オンライン申請URL / 必要書類 / 様式 / 手数料 / 法定処理期間 / 根拠法令 / channel so a toritsugi cell can guide + (eventually) file procedurally (ADR-2605312030 §2). OPEN DATA (derived from the authority's own published guidance; provenance mandatory). CONSTITUTIONAL: `verificationStatus` gates live submission (G14) — `toritsugi_submit` MUST refuse any entry that is `unverified-seed` or whose `lastVerified` is outside the freshness window. Seed entries enable guide/routing design only; live filing requires `maintainer-verified` (public procedure) or `council-verified` (代行 / R3 path, which additionally requires 行政書士法 clearance + Council Lv7+ per G15). Never fabricate procedure data (G8): `legalBasis` + `provenance` are mandatory.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "procedureId",
+          "title",
+          "jurisdiction",
+          "authority",
+          "channelType",
+          "legalBasis",
+          "provenance",
+          "lastVerified",
+          "verificationStatus"
+        ],
+        "properties": {
+          "procedureId": {"type": "string", "maxLength": 120, "description": "Stable slug (e.g. 'jp-juminhyo-utsushi')"},
+          "title": {"type": "string", "maxLength": 200, "description": "Procedure display name (e.g. '住民票の写し交付請求')"},
+          "jurisdiction": {"type": "string", "maxLength": 8, "description": "e.g. jpn / eu / usa"},
+          "regime": {"type": "string", "description": "Procedure regime / level (jurisdiction × tier of government). knownValues are illustrative, not exhaustive — worldwide seed coverage spans JP/US/EU/DE/FR/UK/CA/AU/IN/SG/BR/MX/KR + Council of Europe.", "knownValues": ["jp-jichitai", "jp-national", "jp-national-tax", "eu", "eu-instrument", "us-federal", "us-federal-tax", "us-state", "de-municipal", "fr-national", "fr-national-tax", "uk-national", "ca-federal", "au-federal-tax", "in-national", "sg-national", "br-federal-tax", "br-electoral", "mx-national", "mx-electoral", "kr-national", "kr-national-tax", "coe-instrument"]},
+          "authority": {"type": "string", "maxLength": 300, "description": "所管 — the ministry / municipality / agency responsible (窓口)"},
+          "channelType": {"type": "string", "knownValues": ["online", "in-person", "postal", "in-person-or-online"], "description": "HOW the procedure is filed"},
+          "onlineUrl": {"type": "string", "format": "uri", "description": "Online application portal URL if any (per-自治体 may resolve at guide time)"},
+          "requiredDocuments": {"type": "array", "items": {"type": "string", "maxLength": 300}, "description": "必要書類 checklist (guide scaffold)"},
+          "formRef": {"type": "string", "maxLength": 120, "description": "chigiri procedure-template id used to guide/compose this procedure"},
+          "feeJpy": {"type": "integer", "minimum": 0, "description": "手数料 in JPY if any (best-effort; varies by 自治体). Reports the official statutory fee charged by the AUTHORITY — toritsugi itself never charges any fee/consideration (G9). 0 = no charge; absent/null = fee varies or not yet coded."},
+          "feeUsd": {"type": "integer", "minimum": 0, "description": "Official authority fee in USD if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeEur": {"type": "integer", "minimum": 0, "description": "Official authority fee in EUR if any (best-effort; varies by Member State / insurer). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeGbp": {"type": "integer", "minimum": 0, "description": "Official authority fee in GBP if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeCad": {"type": "integer", "minimum": 0, "description": "Official authority fee in CAD if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeAud": {"type": "integer", "minimum": 0, "description": "Official authority fee in AUD if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeInr": {"type": "integer", "minimum": 0, "description": "Official authority fee in INR if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeSgd": {"type": "integer", "minimum": 0, "description": "Official authority fee in SGD if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeBrl": {"type": "integer", "minimum": 0, "description": "Official authority fee in BRL if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeMxn": {"type": "integer", "minimum": 0, "description": "Official authority fee in MXN if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "feeKrw": {"type": "integer", "minimum": 0, "description": "Official authority fee in KRW if any (best-effort; varies). Not a toritsugi charge (G9). 0 = free; absent/null = varies or not yet coded."},
+          "statutoryProcessingDays": {"type": "integer", "minimum": 0, "description": "法定処理期間 / target processing days (status_track basis; 0 = same-day/immediate)"},
+          "legalBasis": {"type": "string", "maxLength": 300, "description": "根拠法令 — MANDATORY (G8 non-fabrication), e.g. '住民基本台帳法 §12'"},
+          "language": {"type": "string", "maxLength": 16, "description": "Filing language, e.g. ja / en"},
+          "stateAlignedFlag": {"type": "boolean", "description": "G13 pass-through to derived records"},
+          "provenance": {"type": "string", "format": "uri", "description": "Source URL this entry was derived from (the authority's published guidance) — MANDATORY (G8)"},
+          "lastVerified": {"type": "string", "format": "datetime", "description": "When the procedure data was last human-verified"},
+          "verificationStatus": {
+            "type": "string",
+            "knownValues": ["unverified-seed", "maintainer-verified", "council-verified"],
+            "description": "G14 submission gate. `unverified-seed` => guide-design only, NO live submission. `maintainer-verified` => member self-submission guidance allowed. `council-verified` => 代行 (R3) path eligible (still gated by G15 + 行政書士法 clearance + Council Lv7+)."
+          },
+          "confidence": {"type": "string", "knownValues": ["high", "medium", "low"], "description": "Maintainer's best-effort confidence in this seed entry's accuracy. INFORMATIONAL ONLY — independent of the constitutional G14 gate: any entry (regardless of confidence) is guide-design-only until verificationStatus advances past unverified-seed."},
+          "notes": {"type": "string", "maxLength": 1500}
+        }
+      }
+    }
+  }
+}

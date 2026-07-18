@@ -148,7 +148,7 @@ maintainer-verified の人手チェック項目)を文書化。または #15(自
 全て `.go.jp` 公式ソース、全件 unverified-seed。根拠法令の条文番号を確認(住民基本台帳法 §12
 [写し交付] / §22 [転入届] · 戸籍法 §49 [出生届] · 番号法 §17 [個人番号カード交付] · 児童手当法
 §7 [認定請求] · 所得税法 §120 [確定申告])— いずれも正確。(b) **verification ワークフローを文書化**:
-`20-actors/toritsugi/registry/VERIFICATION.md` を新設。3 tier(unverified-seed →
+`orgs/etzhayyim/com-etzhayyim-toritsugi/registry/VERIFICATION.md` を新設。3 tier(unverified-seed →
 maintainer-verified → council-verified)の意味・flip 権限・unlock、freshnessWindowDays(180)の
 staleness 規則、unverified-seed → maintainer-verified の **10項目人手チェックリスト**(title/所管/
 根拠法令/channel+URL/必要書類/手数料/法定処理期間/provenance公式性[fail-closed]/lastVerified/
@@ -184,7 +184,7 @@ fleet/インフラ非依存。1,700+ 市区町村 × 手続きの scaling 方針
 (#11/#14 は R0 不可/延期と確定、他は完了)。
 
 ### iter-9 (2026-05-31)
-**上げた項目: #15 — 自治体横展開 curation 方針(設計文書)。** `20-actors/toritsugi/registry/
+**上げた項目: #15 — 自治体横展開 curation 方針(設計文書)。** `orgs/etzhayyim/com-etzhayyim-toritsugi/registry/
 SCALING.md` を新設。核心は **2-tier registry 設計**:(1) national `procedure`(現行 lexicon、
 根拠法令/法定期間/書類type/channel kind、`authority`=generic のまま)+(2) FUTURE
 `municipalBinding`(R2+、未作成。procedure×自治体 の concrete 窓口/様式CID/手数料/online URL、
@@ -201,7 +201,7 @@ graceful degrade、G8 で窓口を捏造しない)・verification は VERIFICATI
 guard clean(既存成果に影響なし)。
 
 ### iter-10 (2026-06-02)
-**上げた項目: #16 — procedure registry の worldwide 多管轄展開。** `registry/procedures.seed.json`
+**上げた項目: #16 — procedure registry の worldwide 多管轄展開。** `registry/procedures.seed.edn`
 を JP のみ(6件)から **worldwide 多管轄(34件)** へ拡張。既存6件は一字一句そのまま保持し、
 新規 **28件** を既存スキーマ(`procedureId` / `title` / `jurisdiction` / `regime` / `authority` /
 `channelType` / `onlineUrl` / `requiredDocuments` / `formRef` / `legalBasis` / `language` /
@@ -259,13 +259,13 @@ VERIFICATION.md 反映が R1 の TODO。
 R0 ceiling(import-RuntimeError・no dispatch・PII平文禁止)を破らずには進められない。次回 loop 以降は
 既存成果の green 維持確認 + 文書の軽微改善に限定し、過剰実装(未使用 schema 等)は避ける。
 
-- 2026-06-02 lexicon reconciliation: EXTENDED `com.etzhayyim.toritsugi.procedure` to cover the worldwide seed (`registry/procedures.seed.json`) — added per-currency authority-fee fields (feeUsd/feeEur/feeGbp/feeCad/feeAud/feeInr/feeSgd/feeBrl/feeMxn/feeKrw) + `confidence`, and extended `regime` knownValues to the JP/US/EU/DE/FR/UK/CA/AU/IN/SG/BR/MX/KR + CoE set. Additive/backward-compatible/permissive only (no additionalProperties:false, no new required, UPL / political-neutrality / informational-only / zero-toritsugi-fee boundary preserved in descriptions). Validators green: lexicon-primary-types ✅, nsid-lexicon-exists ✅; lexicon-const-name-collision FAILS on a pre-existing unrelated collision (`com.etzhayyim.apps.ipaddress.analyzeIp`), confirmed identical with this edit stashed — not caused by this file.
+- 2026-06-02 lexicon reconciliation: EXTENDED `com.etzhayyim.toritsugi.procedure` to cover the worldwide seed (`registry/procedures.seed.edn`) — added per-currency authority-fee fields (feeUsd/feeEur/feeGbp/feeCad/feeAud/feeInr/feeSgd/feeBrl/feeMxn/feeKrw) + `confidence`, and extended `regime` knownValues to the JP/US/EU/DE/FR/UK/CA/AU/IN/SG/BR/MX/KR + CoE set. Additive/backward-compatible/permissive only (no additionalProperties:false, no new required, UPL / political-neutrality / informational-only / zero-toritsugi-fee boundary preserved in descriptions). Validators green: lexicon-primary-types ✅, nsid-lexicon-exists ✅; lexicon-const-name-collision FAILS on a pre-existing unrelated collision (`com.etzhayyim.apps.ipaddress.analyzeIp`), confirmed identical with this edit stashed — not caused by this file.
 
-- 2026-06-02 long-tail worldwide deepening: merged 32 long-tail entries into `registry/procedures.seed.json` (34 → 66) across 4 buckets — EU-REST (SE/NL/ES/PL/IT/IE/CH/DK), ASIA-REST (CN/TW/HK/TH/ID/PH/VN/MY), AMERICAS-REST (AR/CL/CO/PE), MEA-OCEANIA (AE/SA/IL/ZA/NG/KE/EG/NZ): resident/address & population registration, national-ID/civil-status, social-security identifiers, voter registration, passport, income-tax filing. Distinct jurisdictions 13 → 41. Every new entry ships verificationStatus=unverified-seed + https provenance + language code + 行政書士法 / UPL boundary caveat; medium-confidence/in-flux entries flagged UNVERIFIED-for-live-use; requiredDocuments left as resolve-at-guide-time (not fabricated). Invariants test `70-tools/scripts/audit/test_toritsugi_registry_seed.py` distinct-jurisdiction threshold raised 5 → 12; all 7 tests green.
+- 2026-06-02 long-tail worldwide deepening: merged 32 long-tail entries into `registry/procedures.seed.edn` (34 → 66) across 4 buckets — EU-REST (SE/NL/ES/PL/IT/IE/CH/DK), ASIA-REST (CN/TW/HK/TH/ID/PH/VN/MY), AMERICAS-REST (AR/CL/CO/PE), MEA-OCEANIA (AE/SA/IL/ZA/NG/KE/EG/NZ): resident/address & population registration, national-ID/civil-status, social-security identifiers, voter registration, passport, income-tax filing. Distinct jurisdictions 13 → 41. Every new entry ships verificationStatus=unverified-seed + https provenance + language code + 行政書士法 / UPL boundary caveat; medium-confidence/in-flux entries flagged UNVERIFIED-for-live-use; requiredDocuments left as resolve-at-guide-time (not fabricated). Invariants test `70-tools/scripts/audit/test_toritsugi_registry_seed.py` distinct-jurisdiction threshold raised 5 → 12; all 7 tests green.
 
 **2026-06-02 R1 filing-deadline core (gate closed)**: `kotodama.cells.toritsugi_status_track/deadline.py` 純コア — 法定届出期限の決定論計算(window は verified/member-confirmed INPUT、暦/営業日 counting)。行政書士法/UPL + G5 を docstring/コードで担保、is_legal_opinion 常に False。敵対的検証の指摘を反映: 統合テストの概念混同(`statutoryProcessingDays`=当局処理時間 ≠ 届出 window)を修正し member-confirmed INPUT へ、bool-as-int 拒否を追加。`test_deadline.py` green。cell.py ゲート閉維持。
 
-**2026-06-05 coverage深化 + 陳腐化テスト reconciliation (loop iter)**: (1) **カバレッジ向上** — 旅券(passport)申請を「国民ID/戸籍系 1件のみ」だった 26 法域へ第2手続きとして追加 (`registry/procedures.seed.json` 66 → 92 entries; 単一手続き法域 27 → 1[nzl は既存])。旅券は全世界で比較可能な普遍手続き; 公式当局ドメインを確信できるもののみ採用し、**手数料・statutoryProcessingDays・条文番号は捏造せず null/省略**(G8; notes に DRIFT WARNING + guide-time resolve)、requiredDocuments は普遍 honest セット + 「resolve at guide time / not fabricated here」。全件 verificationStatus=unverified-seed(G14) + https provenance + UPL/行政書士法 境界注記。distinct jurisdictions 41 維持。sibling invariants suite `test_toritsugi_registry_seed.py` **7/7 green**。 (2) **成熟度向上(red test 解消)** — `test_toritsugi_invariants.py::test_seed_all_unverified_and_cited` は HEAD 時点で既に赤(2026-06-02 worldwide 化で `.go.jp`固定 + legalBasis 全件必須が陳腐化、非 .go.jp 60 件で fail)。MATURITY 記載の責任分担(worldwide データ不変条件は sibling suite が担う)に従い**外科的に scope**: 全件には普遍チェック(unverified-seed/https/provenance非空)、厳格な `.go.jp`公式ドメイン + legalBasis 必須は **JP backbone 行に限定**(worldwide 行で公式ドメイン heuristic は canada.ca/government.nl/borger.dk 等を誤判定し、国別条文の捏造は G8 違反のため)。loosen ではなく scope。両 suite **17/17 green**。
+**2026-06-05 coverage深化 + 陳腐化テスト reconciliation (loop iter)**: (1) **カバレッジ向上** — 旅券(passport)申請を「国民ID/戸籍系 1件のみ」だった 26 法域へ第2手続きとして追加 (`registry/procedures.seed.edn` 66 → 92 entries; 単一手続き法域 27 → 1[nzl は既存])。旅券は全世界で比較可能な普遍手続き; 公式当局ドメインを確信できるもののみ採用し、**手数料・statutoryProcessingDays・条文番号は捏造せず null/省略**(G8; notes に DRIFT WARNING + guide-time resolve)、requiredDocuments は普遍 honest セット + 「resolve at guide time / not fabricated here」。全件 verificationStatus=unverified-seed(G14) + https provenance + UPL/行政書士法 境界注記。distinct jurisdictions 41 維持。sibling invariants suite `test_toritsugi_registry_seed.py` **7/7 green**。 (2) **成熟度向上(red test 解消)** — `test_toritsugi_invariants.py::test_seed_all_unverified_and_cited` は HEAD 時点で既に赤(2026-06-02 worldwide 化で `.go.jp`固定 + legalBasis 全件必須が陳腐化、非 .go.jp 60 件で fail)。MATURITY 記載の責任分担(worldwide データ不変条件は sibling suite が担う)に従い**外科的に scope**: 全件には普遍チェック(unverified-seed/https/provenance非空)、厳格な `.go.jp`公式ドメイン + legalBasis 必須は **JP backbone 行に限定**(worldwide 行で公式ドメイン heuristic は canada.ca/government.nl/borger.dk 等を誤判定し、国別条文の捏造は G8 違反のため)。loosen ではなく scope。両 suite **17/17 green**。
 
 **2026-06-05 cross-actor parity (loop iter)**: chigiri が法律扶助でカバーするが toritsugi に欠けていた 6 法域(aut/bel/fin/grc/nor/prt)へ旅券申請手続きを実在公式当局で追加(Austria oesterreich.gv.at / Belgium FPS Foreign Affairs / Finland Poliisi / Greece Hellenic Police / Norway politiet / Portugal IRN-ePortugal)。手続き 92 → 98、distinct jurisdictions **41 → 47**。iter-1 と同一の honest 規律(fee/条文 null・DRIFT warning・requiredDocuments guide-time resolve・unverified-seed・https・UPL 境界)。両 suite **17/17 green**。結果: toritsugi(行政手続き)と chigiri(法律扶助)が**完全に同一の 47 法域**をカバー(toritsugi-only=0 / chigiri-only=0)。
 

@@ -1,0 +1,5 @@
+{:identity/id "did:web:toritsugi.etzhayyim.com"
+ :identity/actor "toritsugi"
+ :identity/canonical-document "manifest.edn"
+ :identity/external-did-document ".well-known/did.json"
+ :identity/canonical-format :edn}
