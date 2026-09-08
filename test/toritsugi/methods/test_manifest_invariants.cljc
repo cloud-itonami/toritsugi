@@ -9,7 +9,7 @@
   R-phase wave cannot silently strand a cell (manifest lists a module that no
   longer exists) or invent a cell (code ships a cell the manifest does not declare)."
   (:require [clojure.test :refer [deftest is run-tests]]
-            [clojure.string :as str] [clojure.edn :as edn]))
+            [kotoba.lang.text :as str] [clojure.edn :as edn]))
 (def ^:private actor-dir (java.io.File. "."))
 (def ^:private lexdir (java.io.File. actor-dir "lex"))
 (def ^:private cells-dir (java.io.File. actor-dir "src/toritsugi/cells"))

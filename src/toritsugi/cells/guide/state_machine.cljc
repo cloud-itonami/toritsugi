@@ -12,7 +12,7 @@
                 verbatim (no invented steps / docs / fees / deadlines).
 
   Pure: (state) -> {\"cell_state\" {…}}. Stdlib only. Self-contained."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def phase-init "init")
 (def phase-guided "guided")

@@ -16,7 +16,7 @@
 
 (ns gen-authority-lexicons
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.edn :as edn]
             [clojure.walk :as walk]
             [clojure.pprint :as pprint]

@@ -26,7 +26,7 @@
 
 (ns gen-authority-actors
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.set :as set]
             [clojure.edn :as edn]
             [clojure.walk :as walk]

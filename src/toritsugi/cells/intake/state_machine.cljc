@@ -12,7 +12,7 @@
 
   Pure: (state) -> {\"cell_state\" {…}}. Stdlib only. Self-contained — the
   session id is assigned by the caller (host) and threaded through the run."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def phase-init "init")
 (def phase-intaked "intaked")

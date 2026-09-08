@@ -30,7 +30,7 @@
     :guide/build     G3,G4,G5,G8,G14.
     :draft/assist    G3,G4,G5,G6,G8,G14.
     :submit/transmit G3,G4,G6,G8,G10,G14,G15. 代行 → ALWAYS high-stakes."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [toritsugi.store :as store]))
 
 (def confidence-floor 0.6)
