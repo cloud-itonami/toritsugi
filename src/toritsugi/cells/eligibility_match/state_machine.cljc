@@ -13,7 +13,7 @@
   所管庁 decides (G5 — never a determination, never advice).
 
   Pure: (state) -> {\"cell_state\" {…}}. Stdlib only. Self-contained."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def phase-init "init")
 (def phase-matched "matched")

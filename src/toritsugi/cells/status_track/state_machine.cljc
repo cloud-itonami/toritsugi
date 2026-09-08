@@ -12,7 +12,7 @@
                 (審査請求) path via chigiri — tracked here, executed there.
 
   Pure: (state) -> {\"cell_state\" {…}}. Stdlib only. Self-contained."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def phase-init "init")
 (def phase-tracked "tracked")

@@ -23,7 +23,7 @@
 
   Pure fns; deterministic; string-keyed post records (house style). Stdlib only —
   the growth (live signing/broadcast) happens actor-side on the mesh, not here."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def DISCLAIMER
   (str "【行政手続き案内ミラー / wayfinding map — NOT the government, NOT an official 自治体 channel, NOT 法的助言, 本人提出が原則】 "
