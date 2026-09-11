@@ -1,4 +1,4 @@
-#!/usr/bin/env bb
+#!/usr/bin/env kbb
 ;;
 ;; gen_authority_lexicons.clj — toritsugi authority-actor lexicon generator
 ;;
@@ -6,10 +6,10 @@
 ;; canonical EDN lexicon plus a JSON wire projection per regime.
 ;;
 ;; Usage:
-;;   bb scripts/gen_authority_lexicons.clj                  # generate all
-;;   bb scripts/gen_authority_lexicons.clj --dry-run         # print plan
-;;   bb scripts/gen_authority_lexicons.clj --regime jp-jichitai,jp-national
-;;   bb scripts/gen_authority_lexicons.clj --check           # verify, exit 1 on drift
+;;   kbb scripts/gen_authority_lexicons.cljk                  # generate all
+;;   kbb scripts/gen_authority_lexicons.cljk --dry-run         # print plan
+;;   kbb scripts/gen_authority_lexicons.cljk --regime jp-jichitai,jp-national
+;;   kbb scripts/gen_authority_lexicons.cljk --check           # verify, exit 1 on drift
 ;;
 ;; Each lexicon = parent `com.etzhayyim.toritsugi.procedure` schema with
 ;; the `regime` knownValues pinned to a single value (the regime itself).
