@@ -1,4 +1,4 @@
-#!/usr/bin/env bb
+#!/usr/bin/env kbb
 ;;
 ;; gen_authority_actors.clj — toritsugi authority-actor generator
 ;;
@@ -7,10 +7,10 @@
 ;; public/actor/ tree + RAD identity journals + i18n message skeletons.
 ;;
 ;; Usage:
-;;   bb scripts/gen_authority_actors.clj                  # generate all regimes
-;;   bb scripts/gen_authority_actors.clj --dry-run         # print plan, write nothing
-;;   bb scripts/gen_authority_actors.clj --regime jp-jichitai,jp-national  # subset
-;;   bb scripts/gen_authority_actors.clj --check           # verify canonical, exit 1 on drift
+;;   kbb scripts/gen_authority_actors.cljk                  # generate all regimes
+;;   kbb scripts/gen_authority_actors.cljk --dry-run         # print plan, write nothing
+;;   kbb scripts/gen_authority_actors.cljk --regime jp-jichitai,jp-national  # subset
+;;   kbb scripts/gen_authority_actors.cljk --check           # verify canonical, exit 1 on drift
 ;;
 ;; Generated artifacts per regime:
 ;;   <root>/50-infra/etzhayyim-did-web/public/actor/toritsugi-<regime>/did.json
