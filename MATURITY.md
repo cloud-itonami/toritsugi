@@ -13,10 +13,10 @@
 | # | 項目 | 状態 | 完了イテレーション |
 |---|---|---|---|
 | 1 | ADR-2605312030 (master) | ✅ | init |
-| 2 | manifest.jsonld + README + CLAUDE.md | ✅ | init |
+| 2 | manifest.jsonld + README + AGENTS.md | ✅ | init |
 | 3 | 6 Lexicons (`com.etzhayyim.toritsugi.*`) | ✅ | init |
 | 4 | procedure registry seed (6件, unverified-seed) | ✅ | init |
-| 5 | registry 更新 (root CLAUDE.md / adr README / deps.toml) | ✅ | init |
+| 5 | registry 更新 (root AGENTS.md / adr README / deps.toml) | ✅ | init |
 | 6 | **7 cell scaffold** (`kotodama.cells.toritsugi_*`, import時 RuntimeError) | ✅ | **iter-1** |
 | 7 | cell ↔ manifest 整合 invariants test (`70-tools/scripts/audit/test_toritsugi_invariants.py`) | ✅ | **iter-2** |
 | 8 | 憲法ゲート G1–G15 を機械検証する node guard (`70-tools/scripts/lint/toritsugi-procedure-gates.mjs`) | ✅ | **iter-5** |
@@ -247,7 +247,7 @@ VERIFICATION.md 反映が R1 の TODO。
 ## R0 phase 総括(iter-9 時点)
 
 リポジトリ内で R0 として積める成熟度は **ほぼ出尽くした**。チェックリスト15項目の状態:
-- ✅ **完了 12**: #1–10, #12, #13(ADR/manifest/README/CLAUDE.md/6 lexicon/seed/registry 更新/
+- ✅ **完了 12**: #1–10, #12, #13(ADR/manifest/README/AGENTS.md/6 lexicon/seed/registry 更新/
   7 cell scaffold/invariants test[10]/node guard[6 check]/双方向 cross-actor boundary/seed 精査+
   VERIFICATION.md/lexicon validator green 固定/cell README parity/自治体 SCALING.md)
 - 🚫 **R0不可・延期 3**: #11(kotoba KG seed=node-local、git外)・#14(fleet.toml=live インフラ、

@@ -136,7 +136,7 @@
     }
   },
   "roadmap": [
-    {"phase": "R0", "date": "2026-05-31", "scope": "Scaffold only. 7 cells path-reserved. 6 Lexicon skeletons. Procedure-registry seed (6 entries, all unverified-seed). manifest + README + CLAUDE.md. NO submission, NO live guide dispatch.", "murakumoFleet": "No deployment", "gate": "ADR-2605312030 (PROPOSED)"},
+    {"phase": "R0", "date": "2026-05-31", "scope": "Scaffold only. 7 cells path-reserved. 6 Lexicon skeletons. Procedure-registry seed (6 entries, all unverified-seed). manifest + README + AGENTS.md. NO submission, NO live guide dispatch.", "murakumoFleet": "No deployment", "gate": "ADR-2605312030 (PROPOSED)"},
     {"phase": "R1", "date": "post-Bootstrap-Council + ≥1 Council Lv6+ ratify", "scope": "procedure_registry live + maintainer-verification flow (G14); eligibility_match + intake + guide build procedureGuide artifacts from chigiri templates. 案内 only, no draft submission.", "murakumoFleet": "reuben", "gate": "Council Lv6+ ≥3"},
     {"phase": "R2", "date": "post-R1 + 30-day public comment", "scope": "draft assist + status_track; member SELF-SUBMITS (toritsugi assembles + hands back). 案内+伴走+本人提出支援 fully live (option 1). No 代行.", "murakumoFleet": "reuben + gad", "gate": "Council Lv6+ ≥4 + 30-day public comment"},
     {"phase": "R3", "date": "post-R2 + Council Lv7+ unanimity + 行政書士法 clearance", "scope": "toritsugi_submit active-outbound 本人同意ベース提出代行 (option 2) for the member's own procedure; encrypted result custody; appeal routing; multi-jurisdiction.", "murakumoFleet": "Full 10-node fleet", "gate": "Council Lv7+ unanimity + 行政書士法 clearance"}
